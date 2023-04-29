@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Restaurant Website</title>
+</head>
+<body onload="getMenu()">
+	<h1>Restaurant Website</h1>
+
+	<h2>Menu</h2>
+	<ul id="menu"></ul>
+
+	<button onclick="orderFood()">Order Now</button>
+
+	<div id="status"></div>
+
+	<script>
+		function getMenu() {
+			fetch('https://raw.githubusercontent.com/saksham-accio/f2_contest_3/main/food.json')
+			.then(response => response.json())
+			.then(data => {
+				const menuList = document.getElementById('menu');
+				data.forEach(item => {
+					const li = document.createElement('li');
+					li.innerText = `${item.name} - $${item.price}`;
+					menuList.appendChild(li);
+				});
+			})
+			.catch(error => {
+				console.error('Error:', error);
+			});
+		}
+
+		function takeOrder() {
+			return new Promise(resolve => {
+				setTimeout(() => {
+					const burgers = ['Cheeseburger', 'Pizza', 'Tacos'];
+					const order = { burgers: burgers };
+					resolve(order);
+				}, 2500);
+			});
+		}
+
+		function orderPrep() {
+			return new Promise(resolve => {
+				setTimeout(() => {
+					const orderStatus = { order_status: true, paid: false };
+					resolve(orderStatus);
+				}, 1500);
+			});
+		}
+
+		function payOrder() {
+			return new Promise(resolve => {
+				setTimeout(() => {
+					const orderStatus = { order_status: true, paid: true };
+					resolve(orderStatus);
+				}, 1000);
+			});
+		}
+
+		async function orderFood() {
+			const orderButton = document.querySelector('button');
+			orderButton.disabled = true;
+
+			const order = await takeOrder();
+			const statusDiv = document.getElementById('status');
+			statusDiv.innerText = 'Order taken: ' + order.burgers.join(', ');
+
+			const orderStatus = await orderPrep();
+			statusDiv.innerText += '\nOrder status: ' + orderStatus.order_status;
+
+			const paymentStatus = await payOrder();
+			statusDiv.innerText += '\nPayment status: ' + paymentStatus.paid;
+
+			if (paymentStatus.paid) {
+				alert('Thank you for eating with us today!');
+			}
+
+			orderButton.disabled = false;
+		}
+	</script>
+</body>
+</html>
